@@ -1,3 +1,7 @@
+"""
+FROM WAV2LIP
+CONSIDER DEFINING OUR OWN PARAMS FILE
+"""
 import pdb
 class HParams:
 	def __init__(self, **kwargs):

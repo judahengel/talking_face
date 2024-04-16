@@ -1,4 +1,14 @@
-#Audio processing utils form Wav2Lip
+"""
+Audio processing utils form Wav2Lip
+get spectrogram by melspectrogram(load_wav(file, sr = hp.sample_rate))
+
+NOTES
+LIBROSA MAY BE DEPRECATED FOR MP4, SO CONSIDER ALTERNATIVE
+NEED TO PAD SPECTROGRAM
+SAMPLING RATE IS SET TO 16000
+TIME TO PRODUCE SPEC IS ~0.25 SECONDS
+I REMOVED LWS BECAUSE IT CAN BE ANNOYING, BUT IT HELPS WITH STABILITY SO WE COULD USE IT
+"""
 import librosa
 import librosa.filters
 import numpy as np
@@ -12,8 +22,7 @@ import time
 #import lws
 
 def load_wav(path, sr = None):
-    audio, sampling_rate = librosa.core.load(path, sr=sr)
-    print("sampling rate for file {} is {}: ".format(path, sampling_rate))
+    audio = librosa.core.load(path, sr=sr)[0]
     return audio
 
 def save_wav(wav, path, sr):
@@ -151,7 +160,7 @@ if __name__ == "__main__":
     spectrograms = []
     for i, file in enumerate(file_paths):
         start_time = time.time()
-        spectrograms.append(melspectrogram(load_wav(file, sr = 16000)))
+        spectrograms.append(melspectrogram(load_wav(file, sr = hp.sample_rate)))
         print("Time taken for {} spectrogram: {:.2f} seconds".format(i, time.time() - start_time))
 
     pdb.set_trace()
