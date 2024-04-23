@@ -1,0 +1,8 @@
+opencv-contrib-python
+opencv-python
+tqdm
+numba
+torch
+torchvision
+librosa
+numpy
