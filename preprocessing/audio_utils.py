@@ -15,8 +15,7 @@ import numpy as np
 from scipy import signal
 from scipy.io import wavfile
 import pdb
-from params import hparams as hp
-import matplotlib.pyplot as plt
+from .params import hparams as hp
 import os
 import time
 #import lws

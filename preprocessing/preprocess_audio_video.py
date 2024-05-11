@@ -16,6 +16,7 @@ from glob import glob
 import audio_utils
 from params import hparams as hp
 import face_detection
+import torch
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--ngpu', help='Number of GPUs across which to run in parallel', default=1, type=int)
@@ -23,8 +24,10 @@ parser.add_argument('--batch_size', help='Single GPU Face detection batch size',
 parser.add_argument("--data_root", help="Root folder of the LRS2 dataset", required=True)
 parser.add_argument("--preprocessed_root", help="Root folder of the preprocessed dataset", required=True)
 args = parser.parse_args()
+num_gpus = torch.cuda.device_count()
+print(f"Number of available GPUs: {num_gpus}")
 
-fa = [face_detection.FaceAlignment(face_detection.LandmarksType._2D, flip_input=False, device='cuda:{}'.format(id)) for id in range(args.ngpu)]
+fa = [face_detection.FaceAlignment(face_detection.LandmarksType._2D, flip_input=False, device='cuda:{}'.format(id)) for id in range(num_gpus)]
 template = 'ffmpeg -loglevel panic -y -i {} -strict -2 {}'
 
 def process_file(vfile, args, gpu_id):
@@ -67,10 +70,11 @@ def mp_handler(job):
         traceback.print_exc()
 
 def main(args):
-    print('Started processing for {} with {} GPUs'.format(args.data_root, args.ngpu))
+
+    print('Started processing for {} with {} GPUs'.format(args.data_root, num_gpus))
     filelist = glob(path.join(args.data_root, '*/*.mp4'))
-    jobs = [(vfile, args, i % args.ngpu) for i, vfile in enumerate(filelist)]
-    p = ThreadPoolExecutor(args.ngpu)
+    jobs = [(vfile, args, i % num_gpus) for i, vfile in enumerate(filelist)]
+    p = ThreadPoolExecutor(num_gpus)
     futures = [p.submit(mp_handler, j) for j in jobs]
     _ = [r.result() for r in tqdm(as_completed(futures), total=len(futures))]
 

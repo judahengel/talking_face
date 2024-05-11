@@ -20,7 +20,7 @@ import argparse, os, cv2, traceback, subprocess
 from tqdm import tqdm
 from glob import glob
 import audio_utils
-from hparams import hparams as hp
+from params import hparams as hp
 
 import face_detection
 
@@ -105,6 +105,7 @@ def main(args):
 	print('Dumping audios...')
 
 	for vfile in tqdm(filelist):
+		print("Processing {}")
 		try:
 			process_audio_file(vfile, args)
 		except KeyboardInterrupt:
